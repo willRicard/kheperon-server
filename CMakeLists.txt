@@ -2,11 +2,21 @@ cmake_minimum_required(VERSION 3.10)
 
 project(KheperonServer)
 
+option(KHEPERON_ENABLE_SERVER "Build gRPC server" ON)
+option(KHEPERON_ENABLE_CLIENT "Build gRPC test client" OFF)
+
 find_package(protobuf REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 
 find_path(KHEPERA_INCLUDE_DIR PATHS khepera.h)
 find_library(KHEPERA_LIBRARY khepera)
+
+# On systems where libkhepera is not available,
+# build only gRPC client
+if(KHEPERA_LIBRARY STREQUAL "KHEPERA_LIBRARY-NOTFOUND")
+  set(KHEPERON_ENABLE_SERVER OFF)
+  set(KHEPERON_ENABLE_CLIENT ON)
+endif(KHEPERA_LIBRARY STREQUAL "KHEPERA_LIBRARY-NOTFOUND")
 
 get_filename_component(kheperon_proto "protos/kheperon.proto" ABSOLUTE)
 get_filename_component(kheperon_proto_path "${kheperon_proto}" PATH)
@@ -37,6 +47,7 @@ add_custom_target(kheperon-proto ALL DEPENDS
   ${kheperon_grpc_hdrs}
 )
 
+if(KHEPERON_ENABLE_SERVER)
 add_executable(kheperon-server
   ${kheperon_proto_srcs}
   ${kheperon_proto_hdrs}
@@ -54,3 +65,18 @@ target_link_libraries(kheperon-server PUBLIC
   gRPC::grpc++
   ${KHEPERA_LIBRARY}
 )
+endif(KHEPERON_ENABLE_SERVER)
+
+if(KHEPERON_ENABLE_CLIENT)
+add_executable(kheperon-client
+  ${kheperon_proto_srcs}
+  ${kheperon_proto_hdrs}
+  ${kheperon_grpc_srcs}
+  ${kheperon_grpc_hdrs}
+  src/kheperon_client.cc
+)
+
+target_link_libraries(kheperon-client PUBLIC
+  gRPC::grpc++
+)
+endif(KHEPERON_ENABLE_CLIENT)
