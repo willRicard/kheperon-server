@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+service Kheperon {
+  rpc EnumSections (EnumRequest) returns (SectionConfigs) {}
+}
+
+message EnumRequest {
+  string secret = 1;
+}
+
+message SectionConfigs {
+  repeated SectionConfig configs = 1;
+}
+
+message SectionConfig {
+  string name = 1;
+  int32 module_bus = 2;
+  int32 module_bus_addr = 3;
+  uint32 device_count = 4;
+  uint32 register_count = 5;
+  uint32 alias_count = 6;
+}
