@@ -16,7 +16,16 @@ message SectionConfig {
   string name = 1;
   int32 module_bus = 2;
   int32 module_bus_addr = 3;
-  uint32 device_count = 4;
-  uint32 register_count = 5;
-  uint32 alias_count = 6;
+  repeated DeviceConfig devices = 4;
+}
+
+
+message DeviceConfig {
+  string name = 1;
+  repeated DeviceClass classes = 2;
+}
+
+message DeviceClass {
+  int32 address = 1;
+  string device_name = 2;
 }
