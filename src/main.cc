@@ -7,8 +7,16 @@
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/health_check_service_interface.h>
 
+#include <khepera/khepera.h>
+
 int main(int argc, char **argv) {
-  std::string server_address("127.0.0.1:50051");
+  int rc = kb_init(argc, argv);
+  if (rc < 0) {
+    std::cout << "Error initializing libkhepera" << std::endl;
+    return 1;
+  }
+
+  std::string server_address("0.0.0.0:50051");
   KheperonImpl service;
 
   grpc::EnableDefaultHealthCheckService(true);

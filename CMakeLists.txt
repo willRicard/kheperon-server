@@ -5,6 +5,9 @@ project(KheperonServer)
 find_package(protobuf REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 
+find_path(KHEPERA_INCLUDE_DIR PATHS khepera.h)
+find_library(KHEPERA_LIBRARY khepera)
+
 get_filename_component(kheperon_proto "protos/kheperon.proto" ABSOLUTE)
 get_filename_component(kheperon_proto_path "${kheperon_proto}" PATH)
 
@@ -43,6 +46,11 @@ add_executable(kheperon-server
   src/main.cc
 )
 
+target_include_directories(kheperon-server PUBLIC
+  ${KHEPERA_INCLUDE_DIR}
+)
+
 target_link_libraries(kheperon-server PUBLIC
   gRPC::grpc++
+  ${KHEPERA_LIBRARY}
 )
